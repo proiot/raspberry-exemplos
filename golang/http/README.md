@@ -12,6 +12,6 @@ go run main.go
 # 2º Gerando o binário
 go build -o bin/proiot-golang-http
 
-# 3º Rodando o binário
+# 3º Rodando a aplicação
 ./bin/proiot-golang-http
 ```
