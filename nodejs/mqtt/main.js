@@ -1,5 +1,17 @@
 const mqtt = require('mqtt')
 
+const deviceHashApp = process.env.DEVICE_HASH_APP
+if (!deviceHashApp) {
+  console.error("Device HashApp inválido")
+  return
+}
+
+const deviceEUI = process.env.DEVICE_EUI
+if (!deviceEUI) {
+  console.error("DeviceEUI inválido")
+  return
+}
+
 const deviceToken = process.env.DEVICE_TOKEN
 if (!deviceToken) {
   console.error("Token inválido")
@@ -7,21 +19,28 @@ if (!deviceToken) {
 }
 
 const options = {
-    username: deviceToken
+  username: deviceToken
 }
 
-deviceID = "5ef20c1f47f0e40019a54876"
-
-const client = mqtt.connect('mqtt://mqtt.proiot.network', options)
+const client = mqtt.connect('mqtts://mqtt.proiot.network:8883', options)
 
 client.on('connect', function () {
-    console.log('Conectado')
+  console.log('Conectado')
 
-    const payload = {
-      "01": "21"
-    }
+  const payload = {
+    data: [
+      {
+        "name": "temp",
+        "value": (Math.random() * (45 - 20) + 10).toFixed(2)
+      },
+      {
+        "name": "bat",
+        "value": Math.floor(Math.random() * 100)
+      }
+    ]
+  }
 
-    client.publish(`device/${deviceID}`, JSON.stringify(payload))
-    
-    client.end()
+  client.publish(`proiot/${deviceHashApp}/${deviceEUI}/tx`, JSON.stringify(payload))
+
+  client.end()
 })

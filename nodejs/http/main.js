@@ -1,24 +1,24 @@
 const http = require("https");
 
+const deviceEUI = process.env.DEVICE_EUI
+if (!deviceEUI) {
+  console.error("DeviceEUI inválido")
+  return
+}
+
 const deviceToken = process.env.DEVICE_TOKEN
 if (!deviceToken) {
   console.error("Token inválido")
   return
 }
 
-const deviceID = "dev-01"
-const variableID = "01"
-
-const value = "25.5"
-
-const path = `/stream/device/${deviceID}/variable/${variableID}/${value}`
-
 const options = {
   "method": "POST",
-  "hostname": "things.proiot.network",
-  "path": path,
+  "hostname": "things.conn.proiot.network",
+  "path": `/${deviceEUI}`,
   "headers": {
-    "authorization": deviceToken
+    "authorization": deviceToken,
+    "content-type": "application/json"
   }
 };
 
@@ -28,9 +28,9 @@ const req = http.request(options, (res) => {
   if (res.statusCode !== 200) {
     console.error("statusCode:", res.statusMessage)
     return
-  } 
+  }
 
-  res.on("data",  (chunk) => {
+  res.on("data", (chunk) => {
     chunks.push(chunk);
   });
 
@@ -39,5 +39,20 @@ const req = http.request(options, (res) => {
     console.log(body.toString());
   });
 });
+
+const payload = {
+  data: [
+    {
+      "name": "temp",
+      "value": (Math.random() * (45 - 20) + 10).toFixed(2)
+    },
+    {
+      "name": "bat",
+      "value": Math.floor(Math.random() * 100)
+    }
+  ]
+}
+
+req.write(JSON.stringify(payload));
 
 req.end();

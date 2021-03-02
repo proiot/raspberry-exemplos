@@ -3,6 +3,9 @@
 ## Build
 
 ```bash
+# Exportando o device eui
+export DEVICE_EUI=xxx
+
 # Exportando o token de acesso
 export DEVICE_TOKEN=xxx
 
